@@ -1,0 +1,59 @@
+name: CI
+on:
+  push:
+  pull_request:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: wedding
+          POSTGRES_USER: wedding
+          POSTGRES_PASSWORD: wedding
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U wedding" --health-interval 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven
+      - name: Build and test
+        working-directory: backend
+        run: mvn -B package
+      - name: Smoke test against Postgres
+        working-directory: backend
+        run: |
+          java -jar target/wedding-backend-1.0.0.jar > app.log 2>&1 &
+          for i in $(seq 1 60); do curl -sf localhost:8080/api/public/event && break; sleep 2; done || (cat app.log; exit 1)
+          set -e
+          TOKEN=$(curl -sf -X POST localhost:8080/api/auth/login -H 'Content-Type: application/json' \
+            -d '{"username":"admin","password":"admin123"}' | jq -r .token)
+          AUTH="Authorization: Bearer $TOKEN"
+          CODE=$(curl -sf -X POST localhost:8080/api/guests -H "$AUTH" -H 'Content-Type: application/json' \
+            -d '{"fullName":"Test Family","seats":2,"side":"BRIDE"}' | jq -r .inviteCode)
+          curl -sf localhost:8080/api/public/invites/$CODE | jq .
+          curl -sf -X POST localhost:8080/api/public/invites/$CODE/rsvp -H 'Content-Type: application/json' -d '{"attending":true,"count":2}' | jq -e '.rsvpStatus=="ATTENDING"'
+          curl -sf -X POST localhost:8080/api/checkin/lookup -H "$AUTH" -H 'Content-Type: application/json' -d "{\"code\":\"https://x.test/invite/$CODE\"}" | jq -e '.remaining==2'
+          curl -sf -X POST localhost:8080/api/checkin/approve -H "$AUTH" -H 'Content-Type: application/json' -d "{\"code\":\"$CODE\",\"people\":2}" | jq -e '.fullyCheckedIn==true'
+          STATUS=$(curl -s -o /dev/null -w '%{http_code}' -X POST localhost:8080/api/checkin/approve -H "$AUTH" -H 'Content-Type: application/json' -d "{\"code\":\"$CODE\",\"people\":1}")
+          test "$STATUS" = "409"
+          curl -sf localhost:8080/api/stats -H "$AUTH" | jq -e '.checkedInPeople==2'
+          echo "Smoke test passed"
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - working-directory: frontend
+        run: npm ci && npm run build
