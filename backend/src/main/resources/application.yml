@@ -5,7 +5,7 @@ spring:
   application:
     name: wedding-backend
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/wedding}
+    url: ${DB_URL:jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:wedding}}
     username: ${DB_USERNAME:wedding}
     password: ${DB_PASSWORD:wedding}
   jpa:

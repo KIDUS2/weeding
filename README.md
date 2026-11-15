@@ -61,6 +61,27 @@ Open http://localhost:8088. Nginx serves the UI and proxies `/api` to the backen
 
 > **Camera needs HTTPS.** Phones only allow camera access on `https://` (or `localhost`). For the wedding day, put the app behind a domain with TLS (e.g. Caddy, Nginx + Let's Encrypt, or Cloudflare Tunnel). Invitation links use the address the admin is browsing from, so send invites from the public HTTPS address.
 
+## Deploy: Vercel (frontend) + Render (backend)
+
+Vercel hosts the React app. The Spring Boot API, PostgreSQL and uploaded photos need a server that stays running, so they go on Render (or any Docker host).
+
+**1. Backend on Render**
+1. Render dashboard → **New → Blueprint** → choose this repo. It reads `render.yaml` and creates `wedding-api` + `wedding-db`.
+2. When asked, set `ADMIN_PASSWORD` (your first admin login password).
+3. After deploy, copy the API URL, e.g. `https://wedding-api.onrender.com`. Check `https://…/api/public/event` returns JSON.
+
+**2. Frontend on Vercel**
+1. Vercel → **Add New → Project** → import this repo.
+2. **Root Directory:** `frontend` (framework is detected as Vite).
+3. **Environment Variable:** `VITE_API_URL` = your Render URL (no trailing slash).
+4. Deploy. You get `https://<project>.vercel.app` with HTTPS, so the door scanner camera works on phones.
+
+**3. Custom domain (optional)**: add it in Vercel, then set `CORS_ALLOWED_ORIGINS` on Render to include it, e.g. `https://wedding.example.com,https://*.vercel.app`.
+
+Notes
+- Send invitations from the Vercel address you'll keep: links and QR codes use the address the admin is on.
+- Render's free web plan sleeps when idle (about a minute to wake) and does not keep uploaded files; `render.yaml` uses the paid Starter plan with a 1 GB disk so the door scanner answers instantly on the day.
+
 ## Run locally for development
 
 ```bash
