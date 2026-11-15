@@ -50,6 +50,13 @@ jobs:
           curl -sf -X PUT localhost:8080/api/media/$ID -H "$AUTH" -H 'Content-Type: application/json' -d '{"cover":true}' | jq -e '.cover==true'
           URL=$(curl -sf localhost:8080/api/public/media | jq -r .cover.url)
           curl -sf -o /dev/null -w '%{content_type}\n' localhost:8080$URL | grep -q image/png
+          # website sections: events sort by time, javascript: links rejected
+          J='Content-Type: application/json'
+          curl -sf -X POST localhost:8080/api/site-items -H "$AUTH" -H "$J" -d '{"kind":"EVENT","title":"Reception","startsAt":"2026-12-27T18:00:00"}' > /dev/null
+          curl -sf -X POST localhost:8080/api/site-items -H "$AUTH" -H "$J" -d '{"kind":"EVENT","title":"Church","startsAt":"2026-12-27T09:00:00"}' > /dev/null
+          curl -sf -X POST localhost:8080/api/site-items -H "$AUTH" -H "$J" -d '{"kind":"FAQ","title":"Parking?","body":"Yes"}' > /dev/null
+          curl -sf localhost:8080/api/public/site | jq -e '.events[0].title=="Church" and (.faq|length)==1'
+          test "$(curl -s -o /dev/null -w '%{http_code}' -X POST localhost:8080/api/site-items -H "$AUTH" -H "$J" -d '{"kind":"EVENT","title":"X","startsAt":"2026-12-27T09:00:00","mapUrl":"javascript:alert(1)"}')" = "400"
           echo '<html>' > fake.jpg
           test "$(curl -s -o /dev/null -w '%{http_code}' -X POST localhost:8080/api/media -H "$AUTH" -F file=@fake.jpg)" = "400"
           echo "Smoke test passed"
