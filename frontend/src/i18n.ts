@@ -43,6 +43,13 @@ const en = {
   invalidBody: "Check that you opened the full link you were sent, or contact the couple's family.",
   opening: 'Opening your invitation…',
   replay: 'Replay opening',
+  ourMoments: 'Our moments',
+  photoOf: (i: number, n: number) => `Photo ${i} of ${n}`,
+  close: 'Close',
+  prevPhoto: 'Previous photo',
+  nextPhoto: 'Next photo',
+  playMusic: 'Play music',
+  pauseMusic: 'Pause music',
 };
 
 const am: typeof en = {
@@ -85,6 +92,13 @@ const am: typeof en = {
   invalidBody: 'የተላከልዎትን ሙሉ ሊንክ መክፈትዎን ያረጋግጡ ወይም የሙሽሮቹን ቤተሰብ ያነጋግሩ።',
   opening: 'ግብዣዎ እየተከፈተ ነው…',
   replay: 'እንደገና ይክፈቱ',
+  ourMoments: 'የእኛ ትዝታዎች',
+  photoOf: (i: number, n: number) => `ፎቶ ${i} ከ${n}`,
+  close: 'ዝጋ',
+  prevPhoto: 'ቀዳሚ ፎቶ',
+  nextPhoto: 'ቀጣይ ፎቶ',
+  playMusic: 'ሙዚቃ አጫውት',
+  pauseMusic: 'ሙዚቃ አቁም',
 };
 
 export type Strings = typeof en;

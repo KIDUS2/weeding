@@ -9,6 +9,7 @@ import AdminLayout from './pages/admin/AdminLayout';
 import Guests from './pages/admin/Guests';
 import Settings from './pages/admin/Settings';
 import Staff from './pages/admin/Staff';
+import Media from './pages/admin/Media';
 import './styles.css';
 
 const Scan = lazy(() => import('./pages/Scan'));
@@ -26,6 +27,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
             <Route index element={<Guests />} />
             <Route path="settings" element={<Settings />} />
             <Route path="staff" element={<Staff />} />
+            <Route path="media" element={<Media />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

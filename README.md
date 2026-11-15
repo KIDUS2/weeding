@@ -18,6 +18,13 @@ Send every guest a personal invitation link with a QR code. Guests RSVP from the
    - A database row lock stops two doors from admitting the same invitation twice.
    - The code can also be typed by hand if a phone screen is cracked or dim.
 
+## Photos & music
+
+Admin → **Photos & music**:
+- Upload up to 60 photos (JPG/PNG/WebP, resized in the browser before upload). Add captions, reorder, pick a **cover**.
+- Upload one background song (MP3/M4A/OGG, ≤ 20 MB). It fades in when a guest taps **Open invitation**; guests can mute it with the floating button, and the choice is remembered.
+- Files are checked by their real content (not the file extension) and stored under `STORAGE_DIR` (Docker volume `uploads`). Back this folder up together with the database.
+
 ## Roles
 
 | Role  | Can do |
@@ -61,6 +68,7 @@ cd frontend && npm install && npm run dev
 | `JWT_SECRET` | dev value | HMAC key, **at least 32 chars** |
 | `JWT_TTL_HOURS` | `24` | Staff login lifetime |
 | `ADMIN_USERNAME` / `ADMIN_PASSWORD` | `admin` / `admin123` | First admin (only on empty DB) |
+| `STORAGE_DIR` | `./data/uploads` | Where photos and music are saved |
 | `CORS_ALLOWED_ORIGINS` | `http://localhost:5173` | Only needed if UI and API are on different origins |
 
 ## CSV import format

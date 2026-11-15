@@ -47,6 +47,13 @@ export interface CheckinEntry {
   id: number; guestId: number; guestName: string; people: number; action: string; scannedBy: string; at: string;
 }
 
+export interface MediaItem {
+  id: number; kind: 'PHOTO' | 'MUSIC'; url: string; caption: string | null; sortOrder: number;
+  cover: boolean; originalName: string | null; sizeBytes: number;
+}
+
+export interface PublicMedia { cover: MediaItem | null; photos: MediaItem[]; music: MediaItem | null }
+
 export class ApiError extends Error {
   constructor(public status: number, message: string) { super(message); }
 }
@@ -116,6 +123,18 @@ export const api = {
   approve: (code: string, people: number) => request<ScanResult>('POST', '/api/checkin/approve', { code, people }),
   recent: () => request<CheckinEntry[]>('GET', '/api/checkin/recent'),
 
+  publicMedia: () => request<PublicMedia>('GET', '/api/public/media', undefined, false),
+  media: () => request<MediaItem[]>('GET', '/api/media'),
+  uploadMedia: (file: Blob, name: string, caption = '') => {
+    const fd = new FormData();
+    fd.append('file', file, name);
+    if (caption) fd.append('caption', caption);
+    return request<MediaItem>('POST', '/api/media', fd);
+  },
+  updateMedia: (id: number, body: { caption?: string; cover?: boolean }) => request<MediaItem>('PUT', `/api/media/${id}`, body),
+  reorderMedia: (ids: number[]) => request<MediaItem[]>('PUT', '/api/media/order', { ids }),
+  deleteMedia: (id: number) => request<void>('DELETE', `/api/media/${id}`),
+
   staff: () => request<User[]>('GET', '/api/staff'),
   createStaff: (s: { username: string; password: string; displayName: string; role: Role }) =>
     request<User>('POST', '/api/staff', s),
@@ -123,6 +142,8 @@ export const api = {
     request<User>('PUT', `/api/staff/${id}`, s),
   deleteStaff: (id: number) => request<void>('DELETE', `/api/staff/${id}`),
 };
+
+export const mediaSrc = (url: string) => BASE + url;
 
 export const inviteUrl = (code: string) => `${location.origin}/invite/${code}`;
 

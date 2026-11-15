@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { api, inviteUrl, type Invite as InviteT, type WeddingEvent } from '../api';
+import { api, inviteUrl, mediaSrc, type Invite as InviteT, type PublicMedia, type WeddingEvent } from '../api';
+import Gallery from '../components/Gallery';
+import MusicButton from '../components/MusicButton';
 import Qr from '../components/Qr';
 import Countdown from '../components/Countdown';
 import { downloadInviteCard } from '../components/inviteCard';
@@ -11,6 +13,7 @@ import '../invite.css';
 
 type Stage = 'sealed' | 'opening' | 'open';
 
+const MUTED_KEY = 'wedding.music.muted';
 const reducedMotion = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 
 function names(ev: WeddingEvent | null, lang: Lang) {
@@ -33,12 +36,44 @@ export default function Invite() {
     try { return localStorage.getItem(seenKey) ? 'open' : 'sealed'; } catch { return 'sealed'; }
   });
 
+  const [media, setMedia] = useState<PublicMedia | null>(null);
+  const audio = useRef<HTMLAudioElement>(null);
+  const [playing, setPlaying] = useState(false);
+
   useEffect(() => {
     api.invite(code).then(setInv).catch((e) => setError(e.message));
+    api.publicMedia().then(setMedia).catch(() => setMedia(null));
   }, [code]);
 
+  /** Must be called from a tap so the browser allows sound. Fades in gently. */
+  const playMusic = () => {
+    const a = audio.current;
+    if (!a) return;
+    a.volume = 0;
+    a.play().then(() => {
+      const fade = setInterval(() => {
+        a.volume = Math.min(0.6, a.volume + 0.05);
+        if (a.volume >= 0.6) clearInterval(fade);
+      }, 120);
+    }).catch(() => { /* blocked or no network: the button stays available */ });
+  };
+
+  const toggleMusic = () => {
+    const a = audio.current;
+    if (!a) return;
+    if (a.paused) {
+      try { localStorage.removeItem(MUTED_KEY); } catch { /* ignore */ }
+      playMusic();
+    } else {
+      a.pause();
+      try { localStorage.setItem(MUTED_KEY, '1'); } catch { /* ignore */ }
+    }
+  };
+
   const open = () => {
-    try { localStorage.setItem(seenKey, '1'); } catch { /* ignore */ }
+    let muted = false;
+    try { localStorage.setItem(seenKey, '1'); muted = !!localStorage.getItem(MUTED_KEY); } catch { /* ignore */ }
+    if (!muted) playMusic();
     if (reducedMotion()) return setStage('open');
     setStage('opening');
     setTimeout(() => setStage('open'), 1500);
@@ -70,9 +105,16 @@ export default function Invite() {
   return (
     <main className={`inv-stage lang-${lang}`}>
       <LangSwitch lang={lang} setLang={setLang} />
+      {media?.music && (
+        <>
+          <audio ref={audio} src={mediaSrc(media.music.url)} loop preload="none"
+                 onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} />
+          {stage !== 'sealed' && <MusicButton playing={playing} onToggle={toggleMusic} t={t} />}
+        </>
+      )}
       {stage !== 'open'
         ? <Envelope guest={inv.guestName} bride={bride} groom={groom} stage={stage} onOpen={open} t={t} />
-        : <Invitation inv={inv} setInv={setInv} lang={lang} t={t} bride={bride} groom={groom} onReplay={replay} />}
+        : <Invitation inv={inv} setInv={setInv} lang={lang} t={t} bride={bride} groom={groom} onReplay={replay} media={media} />}
     </main>
   );
 }
@@ -112,8 +154,9 @@ function Envelope({ guest, bride, groom, stage, onOpen, t }: {
   );
 }
 
-function Invitation({ inv, setInv, lang, t, bride, groom, onReplay }: {
+function Invitation({ inv, setInv, lang, t, bride, groom, onReplay, media }: {
   inv: InviteT; setInv: (i: InviteT) => void; lang: Lang; t: Strings; bride: string; groom: string; onReplay: () => void;
+  media: PublicMedia | null;
 }) {
   const ev = inv.event;
   const date = ev?.eventDate ? new Date(ev.eventDate) : null;
@@ -140,6 +183,11 @@ function Invitation({ inv, setInv, lang, t, bride, groom, onReplay }: {
   return (
     <div className="inv-flow">
       <article className="inv-sheet inv-rise">
+        {media?.cover && (
+          <figure className="inv-cover">
+            <img src={mediaSrc(media.cover.url)} alt={media.cover.caption ?? `${bride} & ${groom}`} />
+          </figure>
+        )}
         <div className="tilet" aria-hidden />
         <div className="inv-pad inv-center">
           <p className="inv-lead">
@@ -208,6 +256,8 @@ function Invitation({ inv, setInv, lang, t, bride, groom, onReplay }: {
         )}
         <div className="tilet" aria-hidden />
       </article>
+
+      {media && media.photos.length > 0 && <Gallery photos={media.photos} t={t} />}
 
       <Pass inv={inv} t={t} onShare={share} />
 
