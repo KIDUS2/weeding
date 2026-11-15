@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { api, inviteUrl, mediaSrc, type Invite as InviteT, type PublicMedia, type WeddingEvent } from '../api';
+import { api, inviteUrl, mediaSrc, type Invite as InviteT, type PublicMedia, type PublicSite, type WeddingEvent } from '../api';
+import { Faq, Schedule, SectionNav, Story } from '../components/SiteSections';
 import Gallery from '../components/Gallery';
 import MusicButton from '../components/MusicButton';
 import Qr from '../components/Qr';
@@ -37,12 +38,14 @@ export default function Invite() {
   });
 
   const [media, setMedia] = useState<PublicMedia | null>(null);
+  const [site, setSite] = useState<PublicSite | null>(null);
   const audio = useRef<HTMLAudioElement>(null);
   const [playing, setPlaying] = useState(false);
 
   useEffect(() => {
     api.invite(code).then(setInv).catch((e) => setError(e.message));
     api.publicMedia().then(setMedia).catch(() => setMedia(null));
+    api.publicSite().then(setSite).catch(() => setSite(null));
   }, [code]);
 
   /** Must be called from a tap so the browser allows sound. Fades in gently. */
@@ -114,7 +117,7 @@ export default function Invite() {
       )}
       {stage !== 'open'
         ? <Envelope guest={inv.guestName} bride={bride} groom={groom} stage={stage} onOpen={open} t={t} />
-        : <Invitation inv={inv} setInv={setInv} lang={lang} t={t} bride={bride} groom={groom} onReplay={replay} media={media} />}
+        : <Invitation inv={inv} setInv={setInv} lang={lang} t={t} bride={bride} groom={groom} onReplay={replay} media={media} site={site} />}
     </main>
   );
 }
@@ -154,9 +157,9 @@ function Envelope({ guest, bride, groom, stage, onOpen, t }: {
   );
 }
 
-function Invitation({ inv, setInv, lang, t, bride, groom, onReplay, media }: {
+function Invitation({ inv, setInv, lang, t, bride, groom, onReplay, media, site }: {
   inv: InviteT; setInv: (i: InviteT) => void; lang: Lang; t: Strings; bride: string; groom: string; onReplay: () => void;
-  media: PublicMedia | null;
+  media: PublicMedia | null; site: PublicSite | null;
 }) {
   const ev = inv.event;
   const date = ev?.eventDate ? new Date(ev.eventDate) : null;
@@ -257,11 +260,25 @@ function Invitation({ inv, setInv, lang, t, bride, groom, onReplay, media }: {
         <div className="tilet" aria-hidden />
       </article>
 
-      {media && media.photos.length > 0 && <Gallery photos={media.photos} t={t} />}
+      <SectionNav links={[
+        ...(site?.events.length ? [{ id: 'schedule', label: t.schedule }] : []),
+        ...(site?.story.length ? [{ id: 'story', label: t.ourStory }] : []),
+        ...(media?.photos.length ? [{ id: 'moments', label: t.navPhotos }] : []),
+        { id: 'pass', label: t.navPass },
+        { id: 'rsvp', label: t.navRsvp },
+        ...(site?.faq.length ? [{ id: 'faq', label: t.faq }] : []),
+      ]} />
 
-      <Pass inv={inv} t={t} onShare={share} />
+      {site && <Schedule events={site.events} lang={lang} t={t} />}
+      {site && <Story story={site.story} lang={lang} t={t} />}
 
-      <Rsvp inv={inv} setInv={setInv} t={t} />
+      {media && media.photos.length > 0 && <div id="moments" className="anchor"><Gallery photos={media.photos} t={t} /></div>}
+
+      <div id="pass" className="anchor"><Pass inv={inv} t={t} onShare={share} /></div>
+
+      <div id="rsvp" className="anchor"><Rsvp inv={inv} setInv={setInv} t={t} /></div>
+
+      {site && <Faq faq={site.faq} lang={lang} t={t} />}
 
       <button className="inv-replay" onClick={onReplay}>{t.replay}</button>
       {toast && <div className="toast" role="status">{toast}</div>}

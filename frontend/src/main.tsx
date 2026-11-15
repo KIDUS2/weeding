@@ -10,6 +10,7 @@ import Guests from './pages/admin/Guests';
 import Settings from './pages/admin/Settings';
 import Staff from './pages/admin/Staff';
 import Media from './pages/admin/Media';
+import Website from './pages/admin/Website';
 import './styles.css';
 
 const Scan = lazy(() => import('./pages/Scan'));
@@ -28,6 +29,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
             <Route path="settings" element={<Settings />} />
             <Route path="staff" element={<Staff />} />
             <Route path="media" element={<Media />} />
+            <Route path="website" element={<Website />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

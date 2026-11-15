@@ -12,6 +12,7 @@ export default function AdminLayout() {
           <NavLink to="/admin" end>Guests</NavLink>
           <NavLink to="/scan">Door scanner</NavLink>
           <NavLink to="/admin/settings">Wedding details</NavLink>
+          <NavLink to="/admin/website">Website</NavLink>
           <NavLink to="/admin/media">Photos &amp; music</NavLink>
           <NavLink to="/admin/staff">Staff</NavLink>
         </nav>

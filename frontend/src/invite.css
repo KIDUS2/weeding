@@ -317,3 +317,72 @@
   .inv-cover img, .lightbox, .lightbox-figure img { animation: none; }
   .eq i { animation: none; height: 12px; }
 }
+
+/* ===== Website sections ===== */
+.anchor, .sec { scroll-margin-top: 64px; }
+.sec { padding: clamp(26px, 6vw, 40px) clamp(20px, 6vw, 40px); }
+.sec-paper { background: var(--paper); box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.6); }
+.sec-dark { color: #fff; padding-left: 4px; padding-right: 4px; }
+.sec-title { font-family: var(--display); font-weight: 400; font-size: 1.75rem; text-align: center; margin: 0 0 22px; }
+.lang-am .sec-title, .lang-am .sched-body h3, .lang-am .story h3 { font-family: 'Abyssinica SIL', var(--display); }
+
+/* sticky section chips */
+.sec-nav {
+  position: sticky; top: 8px; z-index: 20; display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none;
+  padding: 6px; margin: -6px 0; border-radius: 999px;
+  background: rgba(30, 42, 74, 0.82); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.12);
+}
+.sec-nav::-webkit-scrollbar { display: none; }
+.sec-nav a {
+  flex: none; padding: 8px 14px; border-radius: 999px; color: #DCE1EE; text-decoration: none; font-weight: 500; font-size: 0.92rem;
+}
+.sec-nav a:hover, .sec-nav a:focus-visible { background: rgba(255, 255, 255, 0.12); color: #fff; }
+
+/* schedule: time | dot | details, joined by a gold rail */
+.sched { list-style: none; margin: 0; padding: 0; }
+.sched-day { margin: 18px 0 10px 0; font-weight: 700; color: var(--green); }
+.sched li:first-child .sched-day { margin-top: 0; }
+.sched-row { display: grid; grid-template-columns: 84px 18px 1fr; gap: 12px; position: relative; padding-bottom: 22px; }
+.sched li:last-child .sched-row { padding-bottom: 0; }
+.sched-row::before {
+  content: ''; position: absolute; left: calc(84px + 12px + 8px); top: 14px; bottom: -2px; width: 2px; background: var(--gold); opacity: 0.5;
+}
+.sched li:last-child .sched-row::before { display: none; }
+.sched-time { text-align: right; display: flex; flex-direction: column; padding-top: 1px; }
+.sched-time b { font-size: 1rem; font-variant-numeric: tabular-nums; }
+.sched-time small { color: var(--muted); font-size: 0.82rem; }
+.sched-dot { width: 14px; height: 14px; margin: 4px 2px 0; border-radius: 50%; background: var(--paper); border: 3px solid var(--gold); position: relative; z-index: 1; }
+.sched-body h3 { margin: 0; font-family: var(--display); font-weight: 400; font-size: 1.3rem; line-height: 1.25; }
+.sched-place { margin: 4px 0 0; font-weight: 700; }
+.sched-addr { margin: 0; color: var(--muted); font-size: 0.92rem; }
+.sched-text { margin: 8px 0 0; line-height: 1.6; }
+.sched-map { display: inline-block; margin-top: 8px; font-weight: 700; color: var(--green); }
+
+/* our story: vertical timeline on the dark stage */
+.story { list-style: none; margin: 0 auto; padding: 0 0 0 28px; max-width: 460px; position: relative; }
+.story::before { content: ''; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: linear-gradient(var(--gold), rgba(212, 166, 58, 0.15)); }
+.story li { position: relative; padding-bottom: 28px; }
+.story li:last-child { padding-bottom: 0; }
+.story li::before {
+  content: ''; position: absolute; left: -28px; top: 4px; width: 16px; height: 16px; border-radius: 50%;
+  background: var(--ink); border: 3px solid var(--gold);
+}
+.story-when { display: inline-block; margin-bottom: 6px; padding: 2px 12px; border-radius: 999px; background: var(--gold); color: var(--ink); font-weight: 700; font-size: 0.85rem; }
+.story h3 { margin: 0 0 6px; font-family: var(--display); font-weight: 400; font-size: 1.4rem; line-height: 1.25; }
+.story p { margin: 0; color: #D6DCEC; line-height: 1.7; }
+
+/* questions: accordion */
+.faq { display: grid; }
+.faq details { border-top: 1px solid var(--line); }
+.faq details:last-child { border-bottom: 1px solid var(--line); }
+.faq summary {
+  list-style: none; cursor: pointer; padding: 16px 36px 16px 0; font-weight: 700; position: relative; line-height: 1.4;
+}
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after {
+  content: '+'; position: absolute; right: 4px; top: 50%; transform: translateY(-50%);
+  width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--mist); color: var(--ink); font-size: 1.1rem; transition: transform 200ms;
+}
+.faq details[open] summary::after { content: '−'; background: var(--gold); }
+.faq details p { margin: 0 0 16px; color: #3A4566; line-height: 1.65; white-space: pre-line; }

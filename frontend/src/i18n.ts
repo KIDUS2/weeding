@@ -50,6 +50,12 @@ const en = {
   nextPhoto: 'Next photo',
   playMusic: 'Play music',
   pauseMusic: 'Pause music',
+  schedule: 'The day',
+  ourStory: 'Our story',
+  faq: 'Good to know',
+  navPhotos: 'Photos',
+  navPass: 'Entry pass',
+  navRsvp: 'RSVP',
 };
 
 const am: typeof en = {
@@ -99,6 +105,12 @@ const am: typeof en = {
   nextPhoto: 'ቀጣይ ፎቶ',
   playMusic: 'ሙዚቃ አጫውት',
   pauseMusic: 'ሙዚቃ አቁም',
+  schedule: 'የዕለቱ መርሐ ግብር',
+  ourStory: 'የእኛ ታሪክ',
+  faq: 'ማወቅ ያለብዎት',
+  navPhotos: 'ፎቶዎች',
+  navPass: 'መግቢያ ካርድ',
+  navRsvp: 'መልስ',
 };
 
 export type Strings = typeof en;

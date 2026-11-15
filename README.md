@@ -18,6 +18,15 @@ Send every guest a personal invitation link with a QR code. Guests RSVP from the
    - A database row lock stops two doors from admitting the same invitation twice.
    - The code can also be typed by hand if a phone screen is cracked or dim.
 
+## Wedding website sections
+
+Admin → **Website** has three tabs. Each item has optional Amharic text, shown when guests switch to አማርኛ.
+- **Schedule**: church ceremony, photo session, reception, melse… each with time, place, address and map link. Shown in time order, grouped by day, with Ethiopian time in Amharic.
+- **Our story**: a timeline of moments ("2019 · How we met").
+- **Questions**: parking, children, dress code… shown as an expandable list.
+
+Empty tabs offer one-tap starting points. The invitation gets a sticky section bar (The day · Our story · Photos · Entry pass · RSVP · Good to know).
+
 ## Photos & music
 
 Admin → **Photos & music**:

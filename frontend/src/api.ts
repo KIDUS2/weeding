@@ -54,6 +54,18 @@ export interface MediaItem {
 
 export interface PublicMedia { cover: MediaItem | null; photos: MediaItem[]; music: MediaItem | null }
 
+export type SiteKind = 'EVENT' | 'STORY' | 'FAQ';
+
+export interface SiteItem {
+  id: number; kind: SiteKind; title: string; titleAm: string | null; body: string | null; bodyAm: string | null;
+  label: string | null; startsAt: string | null; endsAt: string | null; venueName: string | null;
+  venueAddress: string | null; mapUrl: string | null; sortOrder: number;
+}
+
+export type SiteItemInput = Omit<SiteItem, 'id' | 'sortOrder'>;
+
+export interface PublicSite { events: SiteItem[]; story: SiteItem[]; faq: SiteItem[] }
+
 export class ApiError extends Error {
   constructor(public status: number, message: string) { super(message); }
 }
@@ -134,6 +146,13 @@ export const api = {
   updateMedia: (id: number, body: { caption?: string; cover?: boolean }) => request<MediaItem>('PUT', `/api/media/${id}`, body),
   reorderMedia: (ids: number[]) => request<MediaItem[]>('PUT', '/api/media/order', { ids }),
   deleteMedia: (id: number) => request<void>('DELETE', `/api/media/${id}`),
+
+  publicSite: () => request<PublicSite>('GET', '/api/public/site', undefined, false),
+  siteItems: (kind: SiteKind) => request<SiteItem[]>('GET', `/api/site-items?kind=${kind}`),
+  createSiteItem: (i: SiteItemInput) => request<SiteItem>('POST', '/api/site-items', i),
+  updateSiteItem: (id: number, i: SiteItemInput) => request<SiteItem>('PUT', `/api/site-items/${id}`, i),
+  reorderSiteItems: (kind: SiteKind, ids: number[]) => request<SiteItem[]>('PUT', '/api/site-items/order', { kind, ids }),
+  deleteSiteItem: (id: number) => request<void>('DELETE', `/api/site-items/${id}`),
 
   staff: () => request<User[]>('GET', '/api/staff'),
   createStaff: (s: { username: string; password: string; displayName: string; role: Role }) =>
