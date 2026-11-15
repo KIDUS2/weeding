@@ -5,15 +5,15 @@ services:
     name: wedding-api
     runtime: docker
     rootDir: backend
-    # Starter (paid) keeps the API awake and allows a disk for photos.
-    # The free plan sleeps after 15 minutes idle and loses uploaded photos on restart.
-    plan: starter
+    # FREE for testing: sleeps after 15 min idle (~1 min to wake) and uploaded photos
+    # are lost on restart. Before the wedding switch to `plan: starter` and uncomment `disk`.
+    plan: free
     region: frankfurt
     healthCheckPath: /api/public/event
-    disk:
-      name: uploads
-      mountPath: /data/uploads
-      sizeGB: 1
+    # disk:
+    #   name: uploads
+    #   mountPath: /data/uploads
+    #   sizeGB: 1
     envVars:
       - key: DB_HOST
         fromDatabase: { name: wedding-db, property: host }
@@ -33,6 +33,8 @@ services:
         sync: false          # you type it in the Render dashboard
       - key: STORAGE_DIR
         value: /data/uploads
+      - key: JAVA_TOOL_OPTIONS
+        value: "-XX:MaxRAMPercentage=70 -XX:+UseSerialGC -Xss512k -XX:TieredStopAtLevel=1"
       - key: CORS_ALLOWED_ORIGINS
         value: https://*.vercel.app
 
@@ -40,5 +42,6 @@ databases:
   - name: wedding-db
     databaseName: wedding
     user: wedding
-    plan: basic-256mb
+    # FREE database is deleted 30 days after creation. Upgrade to basic-256mb before then.
+    plan: free
     region: frankfurt
