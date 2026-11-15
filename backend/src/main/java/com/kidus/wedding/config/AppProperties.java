@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import java.util.List;
 
 @ConfigurationProperties(prefix = "app")
-public record AppProperties(Jwt jwt, Admin admin, Cors cors) {
+public record AppProperties(Jwt jwt, Admin admin, Cors cors, Storage storage) {
 
     public record Jwt(String secret, long ttlHours) {
     }
@@ -14,5 +14,8 @@ public record AppProperties(Jwt jwt, Admin admin, Cors cors) {
     }
 
     public record Cors(List<String> allowedOrigins) {
+    }
+
+    public record Storage(String dir) {
     }
 }

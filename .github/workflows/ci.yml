@@ -44,6 +44,14 @@ jobs:
           STATUS=$(curl -s -o /dev/null -w '%{http_code}' -X POST localhost:8080/api/checkin/approve -H "$AUTH" -H 'Content-Type: application/json' -d "{\"code\":\"$CODE\",\"people\":1}")
           test "$STATUS" = "409"
           curl -sf localhost:8080/api/stats -H "$AUTH" | jq -e '.checkedInPeople==2'
+          # media: upload a 1x1 PNG, make it the cover, fetch it publicly, reject a disguised file
+          printf '\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x06\x00\x00\x00\x1f\x15\xc4\x89\x00\x00\x00\rIDATx\x9cc\xf8\x0f\x00\x00\x01\x01\x00\x05\x18\xd8N\x00\x00\x00\x00IEND\xaeB`\x82' > dot.png
+          ID=$(curl -sf -X POST localhost:8080/api/media -H "$AUTH" -F file=@dot.png -F caption=Hello | jq -r .id)
+          curl -sf -X PUT localhost:8080/api/media/$ID -H "$AUTH" -H 'Content-Type: application/json' -d '{"cover":true}' | jq -e '.cover==true'
+          URL=$(curl -sf localhost:8080/api/public/media | jq -r .cover.url)
+          curl -sf -o /dev/null -w '%{content_type}\n' localhost:8080$URL | grep -q image/png
+          echo '<html>' > fake.jpg
+          test "$(curl -s -o /dev/null -w '%{http_code}' -X POST localhost:8080/api/media -H "$AUTH" -F file=@fake.jpg)" = "400"
           echo "Smoke test passed"
 
   frontend:
