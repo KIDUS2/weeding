@@ -38,6 +38,18 @@ public class WeddingEvent {
     @Column(columnDefinition = "TEXT")
     private String message;
 
+    @Column(name = "bride_name_am")
+    private String brideNameAm;
+
+    @Column(name = "groom_name_am")
+    private String groomNameAm;
+
+    @Column(name = "venue_name_am")
+    private String venueNameAm;
+
+    @Column(name = "message_am", columnDefinition = "TEXT")
+    private String messageAm;
+
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt = LocalDateTime.now();
 
@@ -58,6 +70,14 @@ public class WeddingEvent {
     public void setDressCode(String dressCode) { this.dressCode = dressCode; }
     public String getMessage() { return message; }
     public void setMessage(String message) { this.message = message; }
+    public String getBrideNameAm() { return brideNameAm; }
+    public void setBrideNameAm(String brideNameAm) { this.brideNameAm = brideNameAm; }
+    public String getGroomNameAm() { return groomNameAm; }
+    public void setGroomNameAm(String groomNameAm) { this.groomNameAm = groomNameAm; }
+    public String getVenueNameAm() { return venueNameAm; }
+    public void setVenueNameAm(String venueNameAm) { this.venueNameAm = venueNameAm; }
+    public String getMessageAm() { return messageAm; }
+    public void setMessageAm(String messageAm) { this.messageAm = messageAm; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 }

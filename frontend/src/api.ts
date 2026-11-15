@@ -13,6 +13,7 @@ export interface WeddingEvent {
   brideName: string; groomName: string; eventDate: string | null;
   venueName: string | null; venueAddress: string | null; mapUrl: string | null;
   dressCode: string | null; message: string | null;
+  brideNameAm: string | null; groomNameAm: string | null; venueNameAm: string | null; messageAm: string | null;
 }
 
 export interface Guest {

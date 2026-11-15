@@ -56,6 +56,22 @@ export default function Settings() {
       <label className="field"><span>Invitation message</span>
         <textarea rows={4} value={ev.message ?? ''} onChange={(e) => set('message', e.target.value)} maxLength={2000} />
       </label>
+      <h2 className="title-xs">In Amharic</h2>
+      <p className="muted small">Guests who switch the invitation to አማርኛ see these. Leave empty to use the English text.</p>
+      <div className="grid2">
+        <label className="field"><span>Bride (Amharic)</span>
+          <input lang="am" value={ev.brideNameAm ?? ''} onChange={(e) => set('brideNameAm', e.target.value)} maxLength={120} placeholder="ሰላም" />
+        </label>
+        <label className="field"><span>Groom (Amharic)</span>
+          <input lang="am" value={ev.groomNameAm ?? ''} onChange={(e) => set('groomNameAm', e.target.value)} maxLength={120} placeholder="ዳዊት" />
+        </label>
+      </div>
+      <label className="field"><span>Hall name (Amharic)</span>
+        <input lang="am" value={ev.venueNameAm ?? ''} onChange={(e) => set('venueNameAm', e.target.value)} maxLength={200} />
+      </label>
+      <label className="field"><span>Invitation message (Amharic)</span>
+        <textarea lang="am" rows={4} value={ev.messageAm ?? ''} onChange={(e) => set('messageAm', e.target.value)} maxLength={2000} />
+      </label>
       {error && <p className="error">{error}</p>}
       {msg && <p className="ok">{msg}</p>}
       <button className="btn btn-ink">Save details</button>

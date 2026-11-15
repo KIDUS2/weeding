@@ -1,6 +1,7 @@
 // Renders a shareable PNG of the invitation (for Telegram / WhatsApp / printing).
 import QRCode from 'qrcode';
 import { formatDate, inviteUrl, type WeddingEvent } from '../api';
+import { ethDateEn } from '../ethiopian';
 
 const INK = '#1E2A4A';
 const GOLD = '#D4A63A';
@@ -82,14 +83,20 @@ export async function renderInviteCard(guestName: string, seats: number, code: s
   ctx.font = '500 34px Karla, sans-serif';
   ctx.fillStyle = INK;
   ctx.fillText(formatDate(event?.eventDate ?? null), W / 2, 580);
+  if (event?.eventDate) {
+    ctx.font = '400 28px Karla, sans-serif';
+    ctx.fillStyle = '#5B6584';
+    ctx.fillText(ethDateEn(new Date(event.eventDate)), W / 2, 620);
+    ctx.fillStyle = INK;
+  }
   if (event?.venueName) {
-    ctx.font = '700 34px Karla, sans-serif';
-    ctx.fillText(event.venueName, W / 2, 630);
+    ctx.font = '700 32px Karla, sans-serif';
+    ctx.fillText(event.venueName, W / 2, 662);
   }
 
   // QR medallion
   const qrSize = 520;
-  const qx = (W - qrSize) / 2, qy = 690;
+  const qx = (W - qrSize) / 2, qy = 720;
   ctx.fillStyle = GOLD;
   ctx.fillRect(qx - 22, qy - 22, qrSize + 44, qrSize + 44);
   ctx.fillStyle = '#FFFFFF';
@@ -102,7 +109,7 @@ export async function renderInviteCard(guestName: string, seats: number, code: s
 
   ctx.fillStyle = INK;
   ctx.font = '60px Marcellus, "Noto Serif Ethiopic", serif';
-  const nameEnd = wrap(ctx, guestName, W / 2, 1330, W - 200, 68);
+  const nameEnd = wrap(ctx, guestName, W / 2, 1350, W - 200, 68);
   ctx.font = '500 32px Karla, sans-serif';
   ctx.fillStyle = GREEN;
   ctx.fillText(seats === 1 ? 'Admits 1 person' : `Admits ${seats} people`, W / 2, nameEnd + 4);

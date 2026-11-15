@@ -18,10 +18,12 @@ public class EventController {
     }
 
     public record EventView(String brideName, String groomName, LocalDateTime eventDate, String venueName,
-                            String venueAddress, String mapUrl, String dressCode, String message) {
+                            String venueAddress, String mapUrl, String dressCode, String message,
+                            String brideNameAm, String groomNameAm, String venueNameAm, String messageAm) {
         public static EventView of(WeddingEvent e) {
             return new EventView(e.getBrideName(), e.getGroomName(), e.getEventDate(), e.getVenueName(),
-                    e.getVenueAddress(), e.getMapUrl(), e.getDressCode(), e.getMessage());
+                    e.getVenueAddress(), e.getMapUrl(), e.getDressCode(), e.getMessage(),
+                    e.getBrideNameAm(), e.getGroomNameAm(), e.getVenueNameAm(), e.getMessageAm());
         }
     }
 
@@ -33,7 +35,11 @@ public class EventController {
             @Size(max = 300) String venueAddress,
             @Size(max = 500) String mapUrl,
             @Size(max = 200) String dressCode,
-            @Size(max = 2000) String message) {
+            @Size(max = 2000) String message,
+            @Size(max = 120) String brideNameAm,
+            @Size(max = 120) String groomNameAm,
+            @Size(max = 200) String venueNameAm,
+            @Size(max = 2000) String messageAm) {
     }
 
     @GetMapping("/api/public/event")
@@ -54,8 +60,16 @@ public class EventController {
         e.setMapUrl(req.mapUrl());
         e.setDressCode(req.dressCode());
         e.setMessage(req.message());
+        e.setBrideNameAm(blankToNull(req.brideNameAm()));
+        e.setGroomNameAm(blankToNull(req.groomNameAm()));
+        e.setVenueNameAm(blankToNull(req.venueNameAm()));
+        e.setMessageAm(blankToNull(req.messageAm()));
         e.setUpdatedAt(LocalDateTime.now());
         return EventView.of(e);
+    }
+
+    private static String blankToNull(String s) {
+        return s == null || s.isBlank() ? null : s.trim();
     }
 
     WeddingEvent load() {
