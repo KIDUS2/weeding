@@ -10,6 +10,7 @@ export default function AdminLayout() {
         <span className="brand">Wedding guests</span>
         <nav>
           <NavLink to="/admin" end>Guests</NavLink>
+          <NavLink to="/admin/planning">Planning</NavLink>
           <NavLink to="/scan">Door scanner</NavLink>
           <NavLink to="/admin/settings">Wedding details</NavLink>
           <NavLink to="/admin/website">Website</NavLink>

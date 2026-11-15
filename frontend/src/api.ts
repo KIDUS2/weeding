@@ -66,6 +66,28 @@ export type SiteItemInput = Omit<SiteItem, 'id' | 'sortOrder'>;
 
 export interface PublicSite { events: SiteItem[]; story: SiteItem[]; faq: SiteItem[] }
 
+export type PlanCategory = 'VENUE' | 'CEREMONY' | 'FOOD' | 'ATTIRE' | 'PHOTO_VIDEO' | 'MUSIC' | 'DECOR' | 'BEAUTY'
+  | 'TRANSPORT' | 'GUESTS' | 'RINGS' | 'HONEYMOON' | 'OTHER';
+
+export interface PlanTask {
+  id: number; title: string; category: PlanCategory; dueDate: string | null; done: boolean;
+  doneAt: string | null; assignee: string | null; notes: string | null;
+}
+export type PlanTaskInput = Omit<PlanTask, 'id' | 'doneAt'>;
+
+export interface BudgetLine {
+  id: number; category: PlanCategory; name: string; vendorName: string | null; vendorPhone: string | null;
+  estimated: number; actual: number | null; paid: number; dueDate: string | null; notes: string | null;
+}
+export type BudgetLineInput = Omit<BudgetLine, 'id'>;
+
+export interface PlanSummary {
+  totalBudget: number | null; estimated: number; expected: number; paid: number; stillToPay: number; left: number | null;
+  byCategory: { category: PlanCategory; expected: number; paid: number }[];
+  tasksTotal: number; tasksDone: number; tasksOverdue: number; nextTasks: PlanTask[]; paymentsDue: BudgetLine[];
+  weddingDate: string | null; daysToGo: number | null;
+}
+
 export class ApiError extends Error {
   constructor(public status: number, message: string) { super(message); }
 }
@@ -153,6 +175,19 @@ export const api = {
   updateSiteItem: (id: number, i: SiteItemInput) => request<SiteItem>('PUT', `/api/site-items/${id}`, i),
   reorderSiteItems: (kind: SiteKind, ids: number[]) => request<SiteItem[]>('PUT', '/api/site-items/order', { kind, ids }),
   deleteSiteItem: (id: number) => request<void>('DELETE', `/api/site-items/${id}`),
+
+  planSummary: () => request<PlanSummary>('GET', '/api/planning/summary'),
+  planTasks: () => request<PlanTask[]>('GET', '/api/planning/tasks'),
+  createTask: (t: PlanTaskInput) => request<PlanTask>('POST', '/api/planning/tasks', t),
+  updateTask: (id: number, t: PlanTaskInput) => request<PlanTask>('PUT', `/api/planning/tasks/${id}`, t),
+  setTaskDone: (id: number, value: boolean) => request<PlanTask>('PATCH', `/api/planning/tasks/${id}/done?value=${value}`),
+  deleteTask: (id: number) => request<void>('DELETE', `/api/planning/tasks/${id}`),
+  starterTasks: () => request<PlanTask[]>('POST', '/api/planning/tasks/starter'),
+  budget: () => request<BudgetLine[]>('GET', '/api/planning/budget'),
+  createBudget: (b: BudgetLineInput) => request<BudgetLine>('POST', '/api/planning/budget', b),
+  updateBudget: (id: number, b: BudgetLineInput) => request<BudgetLine>('PUT', `/api/planning/budget/${id}`, b),
+  deleteBudget: (id: number) => request<void>('DELETE', `/api/planning/budget/${id}`),
+  setTotalBudget: (totalBudget: number | null) => request<PlanSummary>('PUT', '/api/planning/settings', { totalBudget }),
 
   staff: () => request<User[]>('GET', '/api/staff'),
   createStaff: (s: { username: string; password: string; displayName: string; role: Role }) =>

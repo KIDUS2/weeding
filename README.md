@@ -18,6 +18,13 @@ Send every guest a personal invitation link with a QR code. Guests RSVP from the
    - A database row lock stops two doors from admitting the same invitation twice.
    - The code can also be typed by hand if a phone screen is cracked or dim.
 
+## Planning (admin only)
+
+Admin → **Planning**, never visible to guests:
+- **Overview**: days to go, checklist progress, expected cost vs total budget, what's paid, overdue tasks, next payments, spending by category.
+- **Checklist**: one click adds a 33-task Ethiopian wedding timeline (hall, church, photographer, habesha kemis, melse, door staff…) with due dates counted back from the wedding date. Tasks are grouped as Overdue / Next 30 days / Later, with categories, who's doing it and notes.
+- **Budget** in birr: estimate → agreed price → paid, vendor name and tap-to-call phone, next payment date, totals per category, and a warning when you go over the total budget.
+
 ## Wedding website sections
 
 Admin → **Website** has three tabs. Each item has optional Amharic text, shown when guests switch to አማርኛ.
