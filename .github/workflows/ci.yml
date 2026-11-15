@@ -57,6 +57,11 @@ jobs:
           curl -sf -X POST localhost:8080/api/site-items -H "$AUTH" -H "$J" -d '{"kind":"FAQ","title":"Parking?","body":"Yes"}' > /dev/null
           curl -sf localhost:8080/api/public/site | jq -e '.events[0].title=="Church" and (.faq|length)==1'
           test "$(curl -s -o /dev/null -w '%{http_code}' -X POST localhost:8080/api/site-items -H "$AUTH" -H "$J" -d '{"kind":"EVENT","title":"X","startsAt":"2026-12-27T09:00:00","mapUrl":"javascript:alert(1)"}')" = "400"
+          # planning: starter checklist, budget totals, not visible without login
+          curl -sf -X POST localhost:8080/api/planning/tasks/starter -H "$AUTH" | jq -e 'length > 20'
+          curl -sf -X POST localhost:8080/api/planning/budget -H "$AUTH" -H "$J" -d '{"name":"Hall","category":"VENUE","estimated":150000,"actual":160000,"paid":50000}' > /dev/null
+          curl -sf -X PUT localhost:8080/api/planning/settings -H "$AUTH" -H "$J" -d '{"totalBudget":500000}' | jq -e '.expected==160000 and .stillToPay==110000 and .left==340000'
+          test "$(curl -s -o /dev/null -w '%{http_code}' localhost:8080/api/planning/summary)" = "401"
           echo '<html>' > fake.jpg
           test "$(curl -s -o /dev/null -w '%{http_code}' -X POST localhost:8080/api/media -H "$AUTH" -F file=@fake.jpg)" = "400"
           echo "Smoke test passed"
