@@ -69,7 +69,7 @@ cd frontend && npm install && npm run dev
 | `JWT_TTL_HOURS` | `24` | Staff login lifetime |
 | `ADMIN_USERNAME` / `ADMIN_PASSWORD` | `admin` / `admin123` | First admin (only on empty DB) |
 | `STORAGE_DIR` | `./data/uploads` | Where photos and music are saved |
-| `CORS_ALLOWED_ORIGINS` | `http://localhost:5173` | Only needed if UI and API are on different origins |
+| `CORS_ALLOWED_ORIGINS` | `http://localhost:*,http://127.0.0.1:*` | Browser origins allowed to call the API (wildcard ports allowed). Set your real domain in production, e.g. `https://wedding.example.com` |
 
 ## CSV import format
 
